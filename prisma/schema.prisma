@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id  Int @id @default(autoincrement())
+  fullName String
+  username String
+  password String
+  email String 
+  gender Gender @default(male)
+  image String?
+ createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  message Message[] @relation("sender")
+  reception Message[] @relation("reception")
+  conversation UserCoversation[]
+}
+
+enum Gender {
+  female
+  male
+}
+
+model Conversation {
+  id Int @id @default(autoincrement())
+  participants UserCoversation[]
+   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  message Message[]
+}
+
+model UserCoversation {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId] , references: [id])
+  conversationId Int
+  conversation Conversation @relation(fields: [conversationId] , references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+  message String
+  sender User @relation( "sender" , fields: [senderId] , references: [id])
+  senderId Int
+  receptionId Int
+  reception User @relation( "reception",fields: [receptionId] , references: [id])
+  conversationId Int
+  conversation Conversation @relation(fields: [conversationId] , references: [id])
+   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
