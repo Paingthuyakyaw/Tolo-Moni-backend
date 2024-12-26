@@ -21,7 +21,6 @@ export class UserController {
       res.status(201).json({
         message: 'Register Successfully',
         data: {
-          fullName: newUser.fullName,
           username: newUser.username,
           email: newUser.email,
           gender: newUser.gender,

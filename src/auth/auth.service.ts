@@ -35,6 +35,12 @@ export class AuthService {
     return {
       token: this.jwtService.sign({ username: user.username, sub: user.id }),
       message: 'Login Success',
+      data: {
+        userId: user.id,
+        name: user.username,
+        email: user.email,
+        created_at: user.createdAt,
+      },
     };
   }
 }
