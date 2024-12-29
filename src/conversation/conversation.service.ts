@@ -41,17 +41,36 @@ export class ConversationService {
   }
 
   async getUserConversation(userId: number) {
+    // Step 1: Find conversation IDs related to the user
+    const userConversations = await this.prisma.userCoversation.findMany({
+      where: {
+        userId: userId,
+      },
+      select: {
+        conversationId: true, // Only fetch the conversationId
+      },
+    });
+
+    // Extract conversation IDs into an array
+    const conversationIds = userConversations.map((uc) => uc.conversationId);
+
+    console.log('Conversation IDs:', conversationIds);
+
+    // Step 2: Fetch conversations and their participants
     return this.prisma.conversation.findMany({
       where: {
-        participants: {
-          some: { userId },
-        },
+        id: { in: conversationIds }, // Filter by matching conversation IDs
       },
       include: {
         participants: {
-          include: { user: true },
+          where: {
+            userId: {
+              not: userId,
+            },
+          },
+          include: { user: true }, // Include user details for participants
         },
-        message: true,
+        message: false, // Include messages in the conversation
       },
     });
   }

@@ -8,7 +8,13 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ConversationService } from 'src/conversation/conversation.service';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST'],
+    credentials: false, // Disable credentials for security
+  },
+})
 export class ChatGateway {
   @WebSocketServer() server: Server;
 
@@ -19,7 +25,9 @@ export class ChatGateway {
     @MessageBody() users: number[],
     @ConnectedSocket() client: Socket,
   ) {
-    const conv = await this.conversation.createConversation(users);
+    const conv = await this.conversation.createConversation([1, 3]);
+    console.log(conv);
+
     client.emit('conversationCreated', conv);
   }
 
@@ -51,6 +59,8 @@ export class ChatGateway {
     @MessageBody() conversationId: number,
     @ConnectedSocket() client: Socket,
   ) {
+    console.log(conversationId, 'cover');
+
     const messages =
       await this.conversation.getMessageInConversation(conversationId);
     client.emit('conversationMessages', messages);
