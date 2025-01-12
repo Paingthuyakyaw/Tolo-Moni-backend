@@ -25,8 +25,7 @@ export class ChatGateway {
     @MessageBody() users: number[],
     @ConnectedSocket() client: Socket,
   ) {
-    const conv = await this.conversation.createConversation([1, 3]);
-    console.log(conv);
+    const conv = await this.conversation.createConversation(users);
 
     client.emit('conversationCreated', conv);
   }
@@ -59,7 +58,7 @@ export class ChatGateway {
     @MessageBody() conversationId: number,
     @ConnectedSocket() client: Socket,
   ) {
-    console.log(conversationId, 'cover');
+    console.log(conversationId, 'id');
 
     const messages =
       await this.conversation.getMessageInConversation(conversationId);

@@ -1,7 +1,16 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/user.dto';
 import { Response } from 'express';
+import { JwtAuthGuard } from 'src/auth/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -34,5 +43,18 @@ export class UserController {
         message: 'Server Error',
       });
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/')
+  async getAllUser(@Query() payload: { search: string }, @Res() res: Response) {
+    const { search } = payload;
+    console.log(search);
+
+    const users = await this.user.getAllUser(search);
+    return res.status(200).json({
+      message: 'all users',
+      data: users,
+    });
   }
 }
